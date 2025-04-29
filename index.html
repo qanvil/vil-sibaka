@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Виль Андрей Владимирович International Corporation - Своя игра</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #3949ab;
+            --accent-color: #e53935;
+            --light-color: #f5f5f5;
+            --dark-color: #1a237e;
+            --success-color: #43a047;
+            --warning-color: #fb8c00;
+            --gradient-start: #1a237e;
+            --gradient-end: #3949ab;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--light-color), #e3f2fd);
+            color: var(--dark-color);
+            min-block-size: 100vh;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            max-inline-size: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-board-header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            min-block-size: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .game-board-header:hover {
+            transform: translateY(-5px);
+        }
+
+        .question-cell {
+            background: linear-gradient(135deg, var(--secondary-color), #5c6bc0);
+            color: white;
+            text-align: center;
+            padding: 25px;
+            border-radius: 12px;
+            font-weight: bold;
+            min-block-size: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 1.2em;
+        }
+
+        .question-cell:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #5c6bc0, var(--secondary-color));
+        }
+
+        .question-cell.disabled {
+            background: linear-gradient(135deg, #9e9e9e, #757575);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset-block-start: 0;
+            inset-inline-start: 0;
+            inset-inline-end: 0;
+            inset-block-end: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, white, #f5f5f5);
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 20px;
+            max-inline-size: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.4s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .team-btn {
+            margin: 5px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .button {
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-size: 1.1em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #5c6bc0);
+            color: white;
+        }
+
+        .button-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-danger {
+            background: linear-gradient(135deg, var(--accent-color), #ef5350);
+            color: white;
+        }
+
+        .button-success {
+            background: linear-gradient(135deg, var(--success-color), #66bb6a);
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border-radius: 20px;
+            margin-block-end: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            inset-block-start: 0;
+            inset-inline-start: 0;
+            inset-inline-end: 0;
+            inset-block-end: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+            z-index: 1;
+        }
+
+        .score-board {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .score-card {
+            padding: 20px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, white, #f5f5f5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            min-inline-size: 180px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .score-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .podium {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin: 40px 0;
+            block-size: 300px;
+            gap: 48px;
+        }
+
+        .podium-step {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 160px;
+            height: 100%;
+            min-height: 150px;
+            padding: 32px 10px 24px 10px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.10);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .podium-step-1 {
+            block-size: 250px;
+            background: linear-gradient(135deg, #ffd700, #ffc107);
+            border-radius: 10px 10px 0 0;
+            z-index: 3;
+            animation-delay: 0.3s;
+        }
+
+        .podium-step-2 {
+            block-size: 200px;
+            background: linear-gradient(135deg, #c0c0c0, #9e9e9e);
+            border-radius: 10px 10px 0 0;
+            z-index: 2;
+            animation-delay: 0.6s;
+        }
+
+        .podium-step-3 {
+            block-size: 150px;
+            background: linear-gradient(135deg, #cd7f32, #8d6e63);
+            border-radius: 10px 10px 0 0;
+            z-index: 1;
+            animation-delay: 0.9s;
+        }
+        
+        .team-avatar {
+            inline-size: 56px;
+            block-size: 56px;
+            background: linear-gradient(135deg, var(--secondary-color), #5c6bc0);
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 22px;
+            margin-block-start: -28px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 4px solid white;
+        }
+
+        .team-select-modal {
+            display: none;
+            position: fixed;
+            inset-block-start: 0;
+            inset-inline-start: 0;
+            inset-inline-end: 0;
+            inset-block-end: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .team-select-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-inline-size: 600px;
+            text-align: center;
+        }
+
+        .team-select-btn {
+            background: linear-gradient(135deg, var(--secondary-color), #5c6bc0);
+            color: white;
+            padding: 15px 30px;
+            margin: 10px 0;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-select-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Стили для списка команд */
+        #teams-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #teams-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-block-end: 1px solid #e3e3e3;
+            font-size: 1.1em;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #222a4d;
+        }
+        #teams-list li:last-child {
+            border-block-end: none;
+        }
+        #teams-list .text-red-500 {
+            margin-inline-start: 10px;
+        }
+        .header, h1, h2, h3, h4, h5, h6, label, button {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Анимированный размытый фон */
+        .animated-bg {
+            position: fixed;
+            inset: 0;
+            inline-size: 100vw;
+            block-size: 100vh;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.55;
+            mix-blend-mode: lighten;
+            /* Временно для проверки движения */
+            outline: 2px dashed #fff3;
+        }
+        .blob1 {
+            inline-size: 520px;
+            block-size: 520px;
+            background: radial-gradient(circle at 30% 30%, #4f5bd5 60%, #fc466b 100%);
+            inset-block-start: 5vh;
+            inset-inline-start: 5vw;
+            animation: blobMove1 18s linear infinite alternate;
+        }
+        .blob2 {
+            inline-size: 420px;
+            block-size: 420px;
+            background: radial-gradient(circle at 70% 70%, #43e97b 60%, #38f9d7 100%);
+            inset-block-start: 60vh;
+            inset-inline-start: 60vw;
+            animation: blobMove2 22s linear infinite alternate;
+        }
+        .blob3 {
+            inline-size: 400px;
+            block-size: 400px;
+            background: radial-gradient(circle at 60% 40%, #a259c6 60%, #fbc2eb 100%);
+            inset-block-start: 40vh;
+            inset-inline-start: 10vw;
+            animation: blobMove3 20s linear infinite alternate;
+        }
+        .blob4 {
+            inline-size: 340px;
+            block-size: 340px;
+            background: radial-gradient(circle at 80% 20%, #fad0c4 60%, #ff61a6 100%);
+            inset-block-start: 10vh;
+            inset-inline-start: 75vw;
+            animation: blobMove4 26s linear infinite alternate;
+        }
+        @keyframes blobMove1 {
+            0%   { transform: translate(0, 0) scale(1); }
+            25%  { transform: translate(180px, 120px) scale(1.08); }
+            50%  { transform: translate(320px, 0) scale(0.95); }
+            75%  { transform: translate(180px, -120px) scale(1.05); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        @keyframes blobMove2 {
+            0%   { transform: translate(0, 0) scale(1); }
+            20%  { transform: translate(-120px, -180px) scale(1.1); }
+            50%  { transform: translate(-320px, 0) scale(0.92); }
+            80%  { transform: translate(-120px, 180px) scale(1.04); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        @keyframes blobMove3 {
+            0%   { transform: translate(0, 0) scale(1); }
+            30%  { transform: translate(200px, 80px) scale(1.07); }
+            60%  { transform: translate(0, 200px) scale(0.97); }
+            90%  { transform: translate(-160px, 0) scale(1.03); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        @keyframes blobMove4 {
+            0%   { transform: translate(0, 0) scale(1); }
+            40%  { transform: translate(-160px, 160px) scale(1.09); }
+            70%  { transform: translate(-320px, -80px) scale(0.93); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        #team-select-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Анимация для правильного и неправильного ответа */
+        .answer-correct-anim {
+            animation: correctFlash 0.8s;
+        }
+        .answer-wrong-anim {
+            animation: wrongFlash 0.8s;
+        }
+        @keyframes correctFlash {
+            0% { box-shadow: 0 0 0 0 rgba(67, 160, 71, 0.7); }
+            40% { box-shadow: 0 0 40px 20px rgba(67, 160, 71, 0.5); }
+            100% { box-shadow: 0 0 0 0 rgba(67, 160, 71, 0); }
+        }
+        @keyframes wrongFlash {
+            0% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.7); }
+            40% { box-shadow: 0 0 40px 20px rgba(229, 57, 53, 0.5); }
+            100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
+        }
+
+        /* Анимация для подсказки */
+        .hint-anim {
+            animation: hintFadeIn 0.7s cubic-bezier(.4,2,.3,1);
+        }
+        @keyframes hintFadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.92);
+                box-shadow: 0 0 0 0 rgba(255, 235, 59, 0.0);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.04);
+                box-shadow: 0 0 24px 8px rgba(255, 235, 59, 0.18);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 235, 59, 0.0);
+            }
+        }
+
+        .vodonos-signature {
+            font-size: 0.95em;
+            color: #e0e7ff;
+            opacity: 0.85;
+            font-weight: 400;
+            margin-block-end: 8px;
+        }
+
+        /* Анимация для кнопки 'Показать ответ' */
+        .show-answer-anim {
+            animation: showAnswerPulse 0.7s cubic-bezier(.4,2,.3,1);
+        }
+        @keyframes showAnswerPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(33, 40, 100, 0.0);
+            }
+            40% {
+                transform: scale(1.12);
+                box-shadow: 0 0 24px 8px rgba(33, 40, 100, 0.18);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(33, 40, 100, 0.0);
+            }
+        }
+
+        /* Анимация bounce и свечение для 1 места */
+        .podium-step-1.animated-winner {
+            animation: winnerBounce 1.2s cubic-bezier(.4,2,.3,1) 1.2s 2 alternate;
+            box-shadow: 0 0 32px 8px #ffe082, 0 0 0 0 #ffd700;
+        }
+        @keyframes winnerBounce {
+            0% { transform: translateY(0) scale(1); box-shadow: 0 0 32px 8px #ffe082, 0 0 0 0 #ffd700; }
+            30% { transform: translateY(-18px) scale(1.08); box-shadow: 0 0 48px 16px #ffd700, 0 0 0 0 #ffd700; }
+            60% { transform: translateY(0) scale(1); box-shadow: 0 0 32px 8px #ffe082, 0 0 0 0 #ffd700; }
+            100% { transform: translateY(0) scale(1); box-shadow: 0 0 32px 8px #ffe082, 0 0 0 0 #ffd700; }
+        }
+
+        /* Конфетти */
+        .confetti-container {
+            pointer-events: none;
+            position: fixed;
+            inset-inline-start: 0; inset-block-start: 0; inline-size: 100vw; block-size: 100vh;
+            z-index: 2000;
+        }
+        .confetti {
+            position: absolute;
+            inline-size: 12px; block-size: 18px;
+            border-radius: 3px;
+            opacity: 0.85;
+            animation: confetti-fall 2.8s linear forwards;
+        }
+        @keyframes confetti-fall {
+            0% { opacity: 0.85; transform: translateY(-40px) rotate(0deg) scale(1); }
+            80% { opacity: 1; }
+            100% { opacity: 0.7; transform: translateY(100vh) rotate(360deg) scale(1.1); }
+        }
+
+        /* Стили для надписей на пьедестале */
+        .podium-step .podium-team-name {
+            font-size: 1.25em;
+            font-weight: 700;
+            color: #222a4d;
+            text-shadow: 0 2px 8px #fff;
+            margin-bottom: 0.2em;
+            text-align: center;
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.2;
+            max-width: 100%;
+        }
+        .podium-step .podium-team-score {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: #222a4d;
+            text-shadow: 0 2px 8px #fff;
+            margin-bottom: 0.5em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg" aria-hidden="true">
+        <div class="blob blob1"></div>
+        <div class="blob blob2"></div>
+        <div class="blob blob3"></div>
+        <div class="blob blob4"></div>
+    </div>
+    <div class="container mx-auto p-4" style="position: relative; z-index: 1;">
+        <!-- Начальный экран -->
+        <div id="start-screen" class="text-center">
+            <div class="header glass-anim" style="animation: slideUp 0.5s;">
+                <h1 class="text-4xl font-bold mb-2">Виль Андрей Владимирович International Corporation</h1>
+                <div class="vodonos-signature">Водонос — Сибанов Алимбек Жоломанович</div>
+                <h2 class="text-2xl">Своя игра: Викторина по основам права</h2>
+            </div>
+            <p class="text-lg mb-6">Добро пожаловать в интерактивную викторину по основам права в формате "Своя игра"!</p>
+            <button id="start-game-btn" class="button button-primary text-lg px-8 py-4">
+                Начать игру
+                <i class="fas fa-play ml-2"></i>
+            </button>
+        </div>
+
+        <!-- Экран добавления команд -->
+        <div id="teams-screen" class="text-center" style="display: none;">
+            <div class="header glass-anim">
+                <h1 class="text-4xl font-bold mb-2">Виль Андрей Владимирович International Corporation</h1>
+                <div class="vodonos-signature">Водонос — Сибанов Алимбек Жоломанович</div>
+                <h2 class="text-2xl">Добавление команд</h2>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto mb-8">
+                <div class="mb-4">
+                    <label for="team-name" class="block text-sm font-medium text-gray-700 mb-2">Название команды:</label>
+                    <input type="text" id="team-name" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button id="add-team-btn" class="button button-primary">Добавить команду</button>
+                <div class="mt-6">
+                    <h3 class="text-lg font-bold mb-2">Список команд:</h3>
+                    <ul id="teams-list"></ul>
+                </div>
+            </div>
+            <div class="mt-8">
+                <button id="start-board-btn" class="button button-success text-lg px-8 py-3" disabled>
+                    Начать викторину
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Игровая доска -->
+        <div id="game-board-screen" style="display: none;">
+            <div class="header glass-anim">
+                <h1 class="text-3xl font-bold mb-2">Виль Андрей Владимирович International Corporation</h1>
+                <div class="vodonos-signature">Водонос — Сибанов Алимбек Жоломанович</div>
+                <h2 class="text-xl">Викторина по основам права "Своя игра"</h2>
+            </div>
+
+            <!-- Табло с баллами команд -->
+            <div class="score-board" id="score-board"></div>
+
+            <!-- Игровая доска с вопросами -->
+            <div class="game-board">
+                <div class="game-board-header">Гражданский кодекс</div>
+                <div class="game-board-header">Семейный кодекс</div>
+                <div class="game-board-header">Уголовный кодекс</div>
+                <div class="game-board-header">Административный кодекс</div>
+                <div class="game-board-header">Трудовой кодекс</div>
+
+                <!-- Баллы-->
+                <div class="question-cell" data-category="0" data-value="100">100</div>
+                <div class="question-cell" data-category="1" data-value="100">100</div>
+                <div class="question-cell" data-category="2" data-value="100">100</div>
+                <div class="question-cell" data-category="3" data-value="100">100</div>
+                <div class="question-cell" data-category="4" data-value="100">100</div>
+
+                <div class="question-cell" data-category="0" data-value="200">200</div>
+                <div class="question-cell" data-category="1" data-value="200">200</div>
+                <div class="question-cell" data-category="2" data-value="200">200</div>
+                <div class="question-cell" data-category="3" data-value="200">200</div>
+                <div class="question-cell" data-category="4" data-value="200">200</div>
+
+                <div class="question-cell" data-category="0" data-value="300">300</div>
+                <div class="question-cell" data-category="1" data-value="300">300</div>
+                <div class="question-cell" data-category="2" data-value="300">300</div>
+                <div class="question-cell" data-category="3" data-value="300">300</div>
+                <div class="question-cell" data-category="4" data-value="300">300</div>
+
+                <div class="question-cell" data-category="0" data-value="400">400</div>
+                <div class="question-cell" data-category="1" data-value="400">400</div>
+                <div class="question-cell" data-category="2" data-value="400">400</div>
+                <div class="question-cell" data-category="3" data-value="400">400</div>
+                <div class="question-cell" data-category="4" data-value="400">400</div>
+
+                <div class="question-cell" data-category="0" data-value="500">500</div>
+                <div class="question-cell" data-category="1" data-value="500">500</div>
+                <div class="question-cell" data-category="2" data-value="500">500</div>
+                <div class="question-cell" data-category="3" data-value="500">500</div>
+                <div class="question-cell" data-category="4" data-value="500">500</div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button id="end-game-btn" class="button button-danger text-lg px-8 py-3">
+                    Завершить игру
+                    <i class="fas fa-trophy ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Экран с результатами -->
+        <div id="results-screen" style="display: none;">
+            <div class="header glass-anim">
+                <h1 class="text-4xl font-bold mb-2">Виль Андрей Владимирович International Corporation</h1>
+                <div class="vodonos-signature">Водонос — Сибанов Алимбек Жоломанович</div>
+                <h2 class="text-2xl">Результаты викторины по основам права</h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto mb-8">
+                <h3 class="text-2xl font-bold text-center mb-6">Пьедестал победителей</h3>
+                
+                <div class="podium">
+                    <div class="flex flex-col items-center mx-4">
+                        <div id="podium-step-2" class="podium-step podium-step-2 flex items-end justify-center flex-col">
+                            <div class="podium-team-name" id="second-place-name">-</div>
+                            <div class="podium-team-score" id="second-place-score">0</div>
+                        </div>
+                        <div class="text-xl font-bold mt-2">2 место</div>
+                    </div>
+
+                    <div class="flex flex-col items-center mx-4">
+                        <div id="podium-step-1" class="podium-step podium-step-1 flex items-end justify-center flex-col">
+                            <div class="podium-team-name" id="first-place-name">-</div>
+                            <div class="podium-team-score" id="first-place-score">0</div>
+                        </div>
+                        <div class="text-xl font-bold mt-2">1 место</div>
+                    </div>
+
+                    <div class="flex flex-col items-center mx-4">
+                        <div id="podium-step-3" class="podium-step podium-step-3 flex items-end justify-center flex-col">
+                            <div class="podium-team-name" id="third-place-name">-</div>
+                            <div class="podium-team-score" id="third-place-score">0</div>
+                        </div>
+                        <div class="text-xl font-bold mt-2">3 место</div>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mt-10 mb-4">Полный список результатов:</h3>
+                <table class="w-full table-auto">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2 text-left">Место</th>
+                            <th class="px-4 py-2 text-left">Команда</th>
+                            <th class="px-4 py-2 text-right">Баллы</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-table">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center mt-8">
+                <button id="new-game-btn" class="button button-primary text-lg px-8 py-3">
+                    Новая игра
+                    <i class="fas fa-redo ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно с вопросом -->
+    <div id="question-modal" class="modal">
+        <div class="modal-content w-full max-w-2xl">
+            <div class="mb-6">
+                <h3 id="question-category" class="text-xl font-semibold text-blue-700"></h3>
+                <p id="question-value" class="text-lg font-bold"></p>
+                <hr class="my-4">
+                <div id="current-team-info" class="bg-blue-100 p-3 rounded-lg mb-4">
+                    <p class="font-bold">Отвечает команда: <span id="current-team-name">-</span></p>
+                </div>
+                <p id="question-text" class="text-xl font-medium mb-6"></p>
+                <div id="hint-section" class="mb-4">
+                    <button id="show-hint-btn" class="button button-primary">
+                        <i class="fas fa-lightbulb mr-2"></i>Показать подсказку (-50% баллов)
+                    </button>
+                    <div id="hint-text" class="mt-3 p-3 bg-yellow-100 rounded-lg" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-3">
+                <button id="correct-answer-btn" class="button button-success">
+                    <i class="fas fa-check mr-2"></i>Правильный ответ
+                </button>
+                <button id="wrong-answer-btn" class="button button-danger">
+                    <i class="fas fa-times mr-2"></i>Неправильный ответ
+                </button>
+                <button id="pass-question-btn" class="button" style="background-color: var(--warning-color); color: white;">
+                    <i class="fas fa-share mr-2"></i>Передать вопрос
+                </button>
+                <button id="show-answer-btn" class="button" style="background-color: var(--dark-color); color: white;">
+                    <i class="fas fa-eye mr-2"></i>Показать ответ
+                </button>
+            </div>
+            
+            <div id="answer-section" class="mt-6 p-4 bg-gray-100 rounded-lg" style="display: none;">
+                <h4 class="font-bold mb-2">Правильный ответ:</h4>
+                <p id="answer-text" class="text-lg"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно выбора команды для передачи вопроса -->
+    <div id="pass-question-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4">Передать вопрос другой команде</h3>
+            <p class="mb-4">Выберите команду, которой хотите передать вопрос:</p>
+            <div id="pass-teams-container" class="flex flex-wrap justify-center gap-3 mb-6">
+                <!-- Сюда будут добавлены кнопки команд -->
+            </div>
+            <div class="text-center">
+                <button id="cancel-pass-btn" class="button button-danger">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно выбора команды -->
+    <div id="team-select-modal" class="team-select-modal">
+        <div class="team-select-content">
+            <h2 class="text-2xl font-bold mb-4">Выберите команду, которая будет отвечать</h2>
+            <div id="team-select-buttons"></div>
+        </div>
+    </div>
+
+    <div class="confetti-container" id="confetti"></div>
+
+    <script>
+        // База данных вопросов
+        const questions = [
+            // Гражданский кодекс
+            [
+                {
+                    value: 100,
+                    question: "Что понимается под «объектами гражданских прав»?",
+                    hint: "Посмотрите, какие виды имущества и невещных благ упоминаются в начале раздела о вещных правах.",
+                    answer: "Объектами гражданских прав являются вещи (движимые и недвижимые), деньги, ценные бумаги, а также результаты интеллектуальной деятельности и иные нематериальные блага."
+                },
+                {
+                    value: 200,
+                    question: "В чём состоит отличие «ущерба» от «упущенной выгоды» при возмещении вреда?",
+                    hint: "Вред может быть реальным (фактические потери) и потенциальным (недополученный доход).",
+                    answer: "«Ущерб» — это фактически понесённые расходы и потери (например, ремонт на сумму X рублей). «Упущенная выгода» — это доход, который лицо могло бы получить, но не получило из-за нарушенного права (например, прибыль, которую можно было заработать на том же имуществе)."
+                },
+                {
+                    value: 300,
+                    question: "Дайте определение «обязательству» и назовите его стороны.",
+                    hint: "Обязательство — основа договорных и внедоговорных правоотношений.",
+                    answer: "Обязательство — это правоотношение, по которому одно лицо (должник) обязано совершить в пользу другого лица (кредитора) определённое действие (передать имущество, выполнить работу, воздержаться от действия и т. п.)."
+                },
+                {
+                    value: 400,
+                    question: "Что такое «правоотношение» и из каких элементов оно состоит?",
+                    hint: "Правоотношение связывает субъекта, объект и содержание (права и обязанности).",
+                    answer: "Правоотношение — это урегулированное нормами права общественное отношение. Состоит из трёх элементов: 1. Субъект (участники — физические или юридические лица), 2. Объект (то, по поводу чего возникают права и обязанности), 3. Содержание (конкретные права и обязанности сторон)."
+                },
+                {
+                    value: 500,
+                    question: "Назовите и охарактеризуйте три способа защиты гражданских прав.",
+                    hint: "Один – судебный иск, другой – досудебная претензия, третий – специальные меры.",
+                    answer: "1. Судебный способ (исковое производство): обращение в суд за признанием права, возмещением ущерба, запретом действий и др. 2. Досудебный способ (претензия, медиация, переговоры): направление официального требования или привлечение посредника для согласования. 3. Специальные меры (негаторный иск, требование реституции): средства защиты конкретных видов прав — например, защита права собственности или авторских прав."
+                }
+            ],
+            // Семейный кодекс
+            [
+                {
+                    value: 100,
+                    question: "С какого возраста разрешён брак без согласия родителей?",
+                    hint: "Посмотрите общую норму о брачном возрасте.",
+                    answer: "С 18 лет без каких-либо дополнительных условий."
+                },
+                {
+                    value: 200,
+                    question: "Назовите три обязательных условия для заключения брака.",
+                    hint: "Условия прописаны в первой главе, касающейся порядка заключения брака.",
+                    answer: "1. Свободное и добровольное согласие обеих сторон. 2. Достижение брачного возраста (18 лет или 16 при наличии основания). 3. Отсутствие препятствий (родство, усыновление, недееспособность и др.)."
+                },
+                {
+                    value: 300,
+                    question: "Какие права имеет ребёнок, рождённый вне брака?",
+                    hint: "Семейный кодекс устанавливает равенство всех детей.",
+                    answer: "Ребёнок, рождённый вне брака, имеет те же права, что и законнорожденный: на имя, на воспитание обеими родителями, на содержание, на наследование и так далее."
+                },
+                {
+                    value: 400,
+                    question: "В чём суть принципа «супружеской верности»?",
+                    hint: "Этот принцип упоминается в разделе о правах и обязанностях супругов.",
+                    answer: "Супруги обязаны сохранять верность друг другу, уважать честь и достоинство семьи, не вступать в интимные отношения с третьими лицами и поддерживать взаимное доверие."
+                },
+                {
+                    value: 500,
+                    question: "Опишите порядок раздела совместно нажитого имущества при разводе.",
+                    hint: "Смотрите главу о расторжении брака и разделе имущества.",
+                    answer: "1. Сначала супруги могут заключить соглашение о разделе имущества (утверждается судом). 2. Если соглашения нет, суд распределяет имущество поровну (1/2 на каждого), но может учесть особые обстоятельства (вклад, интересы детей, нуждаемость). 3. Суд выносит решение, которое подлежит обязательному исполнению."
+                }
+            ],
+            // Уголовный кодекс
+            [
+                {
+                    value: 100,
+                    question: "Что означает «презумпция невиновности»?",
+                    hint: "Формулировка приводится в Уголовно-процессуальном кодексе и Конституции.",
+                    answer: "Лицо считается невиновным, пока его виновность не будет доказана в законном судебном порядке и установлена вступившим в силу приговором."
+                },
+                {
+                    value: 200,
+                    question: "Назовите три вида наказаний, предусмотренных УК РФ.",
+                    hint: "Перечень наказаний находится в начале главы об ответственности.",
+                    answer: "Лишение свободы, штраф, ограничение свободы (исправительные/обязательные работы и т. п.)."
+                },
+                {
+                    value: 300,
+                    question: "Что понимается под «составом преступления»?",
+                    hint: "Состав включает четыре элемента — ищите в статье о составе преступления.",
+                    answer: "Состав преступления состоит из: объекта (на кого/что посягают), объективной стороны (деяние и последствия), субъекта (кто совершил) и субъективной стороны (форма вины — умысел или неосторожность)."
+                },
+                {
+                    value: 400,
+                    question: "В чём отличие умысла от неосторожности?",
+                    hint: "Сравните волю и знание при умысле с предвидением при неосторожности.",
+                    answer: "Умысел: лицо осознаёт опасность деяния и желает или сознательно допускает наступление последствий. Неосторожность: лицо либо не предвидит последствий и легкомысленно надеется предотвратить их, либо предвидит, но бездействует."
+                },
+                {
+                    value: 500,
+                    question: "Назовите и охарактеризуйте три вида освобождения от уголовной ответственности.",
+                    hint: "Ищите в разделе об освобождении от уголовной ответственности и наказания.",
+                    answer: "1. За деятельное раскаяние — лицо добровольно возмещает вред и содействует раскрытию преступления. 2. По малозначительности — деяние не причинило значительного вреда. 3. Амнистия — акт высшего органа власти, освобождающий от ответственности определённые категории лиц."
+                }
+            ],
+            // Административный кодекс
+            [
+                {
+                    value: 100,
+                    question: "Какой орган выносит постановление об административном правонарушении?",
+                    hint: "Это может быть и должностное лицо (например, инспектор), и судья.",
+                    answer: "Постановление выносит уполномоченный орган или должностное лицо (ГИБДД, полиционер, налоговый инспектор и др.), либо судья."
+                },
+                {
+                    value: 200,
+                    question: "Перечислите три вида административных наказаний.",
+                    hint: "Смотрите главу о санкциях.",
+                    answer: "Предупреждение, штраф, лишение специального права (например, права управления ТС), административный арест, обязательные работы."
+                },
+                {
+                    value: 300,
+                    question: "Что такое объект административного правонарушения?",
+                    hint: "Это общественные отношения, охраняемые административным правом.",
+                    answer: "Объектом АПН является совокупность общественных отношений (порядок управления, общественный порядок, безопасность движения и др.), на которые посягает нарушение."
+                },
+                {
+                    value: 400,
+                    question: "В чём состоят отличия предупреждения и штрафа?",
+                    hint: "Один — без взыскания денег, другой — всегда с денежным взысканием.",
+                    answer: "Предупреждение: устное или письменное предостережение без взимания. Штраф: обязательное денежное взыскание в установленном размере."
+                },
+                {
+                    value: 500,
+                    question: "Опишите процедуру обжалования постановления по делу об административном правонарушении.",
+                    hint: "Два уровня — сначала в орган или должностное лицо, потом в суд.",
+                    answer: "1. Жалоба подаётся вышестоящему должностному лицу или органу, вынесшему постановление, в течение 10 дней со дня вручения. 2. Если ответ неудовлетворительный или отсутствует, обжалование направляется в суд (районный суд) в течение 10 дней со дня получения ответа или истечения срока на обжалование."
+                }
+            ],
+            // Трудовой кодекс
+            [
+                {
+                    value: 100,
+                    question: "Какие документы работник предоставляет при приёме на работу?",
+                    hint: "Прописано в разделе об обязательных документах.",
+                    answer: "Паспорт и трудовая книжка (или надлежащим образом оформленный её дубликат)."
+                },
+                {
+                    value: 200,
+                    question: "Что такое срочный трудовой договор?",
+                    hint: "Смотрите определение в главе «Общие положения».",
+                    answer: "Трудовой договор, заключённый на определённый срок или до наступления определённого события."
+                },
+                {
+                    value: 300,
+                    question: "Назовите три обязательных условия трудового договора.",
+                    hint: "Перечислены в статье о содержании договора.",
+                    answer: "Место работы (или структурное подразделение), трудовая функция (должность, квалификация) и условия оплаты труда (размер, периодичность)."
+                },
+                {
+                    value: 400,
+                    question: "В каких случаях работник может расторгнуть трудовой договор без отработки?",
+                    hint: "Ищите основания в разделе об увольнении по инициативе работника.",
+                    answer: "При нарушении работодателем прав работника: задержка выплаты зарплаты более чем на 15 дней, невыполнение условий охраны труда, несоблюдение иных существенных условий договора."
+                },
+                {
+                    value: 500,
+                    question: "Опишите механизм привлечения к дисциплинарной ответственности и сроки давности.",
+                    hint: "Смотрите раздел «Дисциплинарные взыскания».",
+                    answer: "Взыскание (замечание, выговор) объявляется не позднее одного месяца со дня, когда работодатель узнал о нарушении, но не более шести месяцев со дня совершения. Увольнение — не позднее одного месяца со дня, когда стало известно о проступке, но не более года со дня его совершения."
+                }
+            ]
+        ];
+
+        // Глобальные переменные
+        let teams = [];
+        let currentQuestion = null;
+        let currentTeamIndex = 0;
+        let currentTeam = null;
+        let hintUsed = false;
+        let questionsAnswered = 0;
+        let totalQuestions = 25; // 5 категорий * 5 вопросов
+
+        // DOM-элементы
+        const startScreen = document.getElementById('start-screen');
+        const teamsScreen = document.getElementById('teams-screen');
+        const gameBoardScreen = document.getElementById('game-board-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const questionModal = document.getElementById('question-modal');
+        const passQuestionModal = document.getElementById('pass-question-modal');
+
+        // Кнопки навигации
+        document.getElementById('start-game-btn').addEventListener('click', showTeamsScreen);
+        document.getElementById('add-team-btn').addEventListener('click', addTeam);
+        document.getElementById('start-board-btn').addEventListener('click', showGameBoard);
+        document.getElementById('end-game-btn').addEventListener('click', showResults);
+        document.getElementById('new-game-btn').addEventListener('click', startNewGame);
+
+        // Кнопки в модальном окне вопроса
+        document.getElementById('show-hint-btn').addEventListener('click', showHint);
+        document.getElementById('correct-answer-btn').addEventListener('click', handleCorrectAnswer);
+        document.getElementById('wrong-answer-btn').addEventListener('click', handleWrongAnswer);
+        document.getElementById('pass-question-btn').addEventListener('click', showPassQuestionModal);
+        document.getElementById('show-answer-btn').addEventListener('click', showAnswer);
+        document.getElementById('cancel-pass-btn').addEventListener('click', hidePassQuestionModal);
+
+        // Обработчик поля ввода для добавления команды по Enter
+        document.getElementById('team-name').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTeam();
+            }
+        });
+
+        // Добавление обработчиков для ячеек с вопросами
+        document.querySelectorAll('.question-cell').forEach(cell => {
+            cell.addEventListener('click', function() {
+                if (!this.classList.contains('disabled')) {
+                    // Сохраняем выбранный вопрос
+                    const category = parseInt(this.getAttribute('data-category'));
+                    const value = parseInt(this.getAttribute('data-value'));
+                    const questionData = questions[category].find(q => q.value === value);
+                    currentQuestion = {
+                        category: category,
+                        value: value,
+                        originalValue: value,
+                        data: questionData
+                    };
+                    // Показываем модальное окно выбора команды
+                    showTeamSelectModal();
+                    this.classList.add('disabled');
+                    questionsAnswered++;
+                    if (questionsAnswered === totalQuestions) {
+                        document.getElementById('end-game-btn').classList.add('animate-pulse');
+                    }
+                }
+            });
+        });
+
+        // Функция для отображения экрана добавления команд
+        function showTeamsScreen() {
+            startScreen.style.display = 'none';
+            teamsScreen.style.display = 'block';
+        }
+
+        // Функция добавления команды
+        function addTeam() {
+            const teamNameInput = document.getElementById('team-name');
+            const teamName = teamNameInput.value.trim();
+            
+            if (teamName) {
+                const teamId = Date.now();  // Уникальный идентификатор
+                const team = {
+                    id: teamId,
+                    name: teamName,
+                    score: 0
+                };
+                
+                teams.push(team);
+                
+                // Добавление команды в список
+                const teamsList = document.getElementById('teams-list');
+                const teamItem = document.createElement('li');
+                teamItem.innerHTML = `
+                    <div class="flex justify-between items-center py-2">
+                        <span>${teamName}</span>
+                        <button class="text-red-500 hover:text-red-700" onclick="removeTeam(${teamId})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                teamsList.appendChild(teamItem);
+                
+                // Очистка поля ввода
+                teamNameInput.value = '';
+                
+                // Разрешаем начать игру, если есть хотя бы одна команда
+                document.getElementById('start-board-btn').disabled = false;
+            }
+        }
+
+        // Функция удаления команды
+        window.removeTeam = function(teamId) {
+            teams = teams.filter(team => team.id !== teamId);
+            renderTeamsList();
+            
+            // Блокируем кнопку начала игры, если нет команд
+            document.getElementById('start-board-btn').disabled = teams.length === 0;
+        };
+
+        // Перерисовка списка команд
+        function renderTeamsList() {
+            const teamsList = document.getElementById('teams-list');
+            teamsList.innerHTML = '';
+            
+            teams.forEach(team => {
+                const teamItem = document.createElement('li');
+                teamItem.innerHTML = `
+                    <div class="flex justify-between items-center py-2">
+                        <span>${team.name}</span>
+                        <button class="text-red-500 hover:text-red-700" onclick="removeTeam(${team.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                teamsList.appendChild(teamItem);
+            });
+        }
+
+        // Функция отображения игрового поля
+        function showGameBoard() {
+            teamsScreen.style.display = 'none';
+            gameBoardScreen.style.display = 'block';
+            updateScoreBoard();
+            questionsAnswered = 0;
+        }
+
+        // Функция обновления табло с баллами
+        function updateScoreBoard() {
+            const scoreBoard = document.getElementById('score-board');
+            scoreBoard.innerHTML = '';
+            
+            teams.forEach(team => {
+                const scoreCard = document.createElement('div');
+                scoreCard.className = 'score-card';
+                scoreCard.innerHTML = `
+                    <h3 class="font-bold">${team.name}</h3>
+                    <p class="text-2xl font-bold mt-2">${team.score}</p>
+                `;
+                scoreBoard.appendChild(scoreCard);
+            });
+        }
+
+        // Функция для показа модального окна выбора команды
+        function showTeamSelectModal() {
+            const modal = document.getElementById('team-select-modal');
+            const buttonsContainer = document.getElementById('team-select-buttons');
+            buttonsContainer.innerHTML = '';
+            teams.forEach((team, idx) => {
+                const button = document.createElement('button');
+                button.className = 'team-select-btn';
+                button.textContent = team.name;
+                button.onclick = () => selectTeam(idx);
+                buttonsContainer.appendChild(button);
+            });
+            modal.style.display = 'block';
+        }
+
+        // Функция для выбора команды
+        function selectTeam(idx) {
+            currentTeamIndex = idx;
+            currentTeam = teams[idx];
+            const modal = document.getElementById('team-select-modal');
+            modal.style.display = 'none';
+            // После выбора команды показываем вопрос
+            openQuestionForTeam();
+        }
+
+        // Функция открытия вопроса для выбранной команды
+        function openQuestionForTeam() {
+            hintUsed = false;
+            document.getElementById('question-category').textContent = getCategoryName(currentQuestion.category);
+            document.getElementById('question-value').textContent = `${currentQuestion.value} баллов`;
+            document.getElementById('question-text').textContent = currentQuestion.data.question;
+            document.getElementById('current-team-name').textContent = currentTeam.name;
+            document.getElementById('hint-text').style.display = 'none';
+            document.getElementById('answer-section').style.display = 'none';
+            document.getElementById('show-hint-btn').disabled = false;
+            questionModal.style.display = 'block';
+        }
+
+        // Функция получения названия категории
+        function getCategoryName(categoryIndex) {
+            const categories = [
+                'Гражданский кодекс',
+                'Семейный кодекс',
+                'Уголовный кодекс',
+                'Административный кодекс',
+                'Трудовой кодекс'
+            ];
+            return categories[categoryIndex];
+        }
+
+        // Функция показа подсказки
+        function showHint() {
+            if (!hintUsed) {
+                // Уменьшаем стоимость вопроса вдвое
+                currentQuestion.value = Math.floor(currentQuestion.value / 2);
+                document.getElementById('question-value').textContent = `${currentQuestion.value} баллов (с подсказкой)`;
+                hintUsed = true;
+            }
+            // Показываем подсказку с анимацией
+            const hintText = document.getElementById('hint-text');
+            hintText.textContent = currentQuestion.data.hint;
+            hintText.style.display = 'block';
+            hintText.classList.remove('hint-anim');
+            // Триггер перерисовки для повторной анимации
+            void hintText.offsetWidth;
+            hintText.classList.add('hint-anim');
+        }
+
+        // Функция обработки правильного ответа
+        function handleCorrectAnswer() {
+            // Анимация
+            const modal = document.querySelector('#question-modal .modal-content');
+            modal.classList.add('answer-correct-anim');
+            setTimeout(() => { modal.classList.remove('answer-correct-anim'); }, 800);
+            // Начисляем баллы команде
+            const team = teams[currentTeamIndex];
+            team.score += currentQuestion.value;
+            updateScoreBoard();
+            setTimeout(() => {
+                questionModal.style.display = 'none';
+                currentTeam = null;
+            }, 800);
+        }
+
+        // Функция обработки неправильного ответа
+        function handleWrongAnswer() {
+            // Анимация
+            const modal = document.querySelector('#question-modal .modal-content');
+            modal.classList.add('answer-wrong-anim');
+            setTimeout(() => { modal.classList.remove('answer-wrong-anim'); }, 800);
+            setTimeout(() => {
+                questionModal.style.display = 'none';
+                currentTeam = null;
+            }, 800);
+        }
+
+        // Функция показа модального окна для передачи вопроса
+        function showPassQuestionModal() {
+            // Заполняем контейнер с командами
+            const passTeamsContainer = document.getElementById('pass-teams-container');
+            passTeamsContainer.innerHTML = '';
+            
+            teams.forEach((team, index) => {
+                if (index !== currentTeamIndex) { // Исключаем текущую команду
+                    const teamButton = document.createElement('button');
+                    teamButton.className = 'team-btn px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600';
+                    teamButton.textContent = team.name;
+                    teamButton.addEventListener('click', () => passQuestionToTeam(index));
+                    passTeamsContainer.appendChild(teamButton);
+                }
+            });
+            
+            // Показываем модальное окно
+            passQuestionModal.style.display = 'block';
+        }
+
+        // Функция скрытия модального окна передачи вопроса
+        function hidePassQuestionModal() {
+            passQuestionModal.style.display = 'none';
+        }
+
+        // Функция передачи вопроса другой команде
+        function passQuestionToTeam(teamIndex) {
+            currentTeamIndex = teamIndex;
+            currentTeam = teams[teamIndex];
+            document.getElementById('current-team-name').textContent = teams[currentTeamIndex].name;
+            passQuestionModal.style.display = 'none';
+        }
+
+        // Функция показа правильного ответа
+        function showAnswer() {
+            const btn = document.getElementById('show-answer-btn');
+            btn.classList.remove('show-answer-anim');
+            void btn.offsetWidth;
+            btn.classList.add('show-answer-anim');
+            document.getElementById('answer-text').textContent = currentQuestion.data.answer;
+            document.getElementById('answer-section').style.display = 'block';
+        }
+
+        // Функция отображения результатов
+        function showResults() {
+            gameBoardScreen.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            // Сортируем команды по количеству баллов (по убыванию)
+            const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
+            // Заполняем пьедестал
+            document.getElementById('first-place-name').textContent = sortedTeams[0]?.name || '-';
+            document.getElementById('first-place-score').textContent = sortedTeams[0]?.score ?? '0';
+            document.getElementById('second-place-name').textContent = sortedTeams[1]?.name || '-';
+            document.getElementById('second-place-score').textContent = sortedTeams[1]?.score ?? '0';
+            document.getElementById('third-place-name').textContent = sortedTeams[2]?.name || '-';
+            document.getElementById('third-place-score').textContent = sortedTeams[2]?.score ?? '0';
+            // Заполняем полную таблицу результатов
+            const resultsTable = document.getElementById('results-table');
+            resultsTable.innerHTML = '';
+            sortedTeams.forEach((team, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-2">${index + 1}</td>
+                    <td class="px-4 py-2">${team.name}</td>
+                    <td class="px-4 py-2 text-right">${team.score}</td>
+                `;
+                resultsTable.appendChild(row);
+            });
+            // --- Bounce победителя и конфетти ---
+            const step1 = document.querySelector('.podium-step-1');
+            setTimeout(() => { if (step1) step1.classList.add('animated-winner'); }, 700);
+            setTimeout(() => { if (step1) step1.classList.remove('animated-winner'); }, 3600);
+            launchConfetti();
+        }
+
+        // Конфетти: генерация и запуск
+        function launchConfetti() {
+            const confettiColors = [
+                '#6a82fb', '#fc5c7d', '#43e97b', '#38f9d7', '#a18cd1', '#fbc2eb', '#fad0c4', '#ff61a6', '#ffd700', '#ffe082', '#81c784', '#e57373'
+            ];
+            const confettiContainer = document.getElementById('confetti');
+            confettiContainer.innerHTML = '';
+            const confettiCount = 36;
+            for (let i = 0; i < confettiCount; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 98 + 'vw';
+                conf.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                conf.style.animationDelay = (Math.random() * 0.8) + 's';
+                confettiContainer.appendChild(conf);
+            }
+            // Удаляем конфетти через 3.5 сек
+            setTimeout(() => { confettiContainer.innerHTML = ''; }, 3500);
+        }
+
+        // Функция запуска новой игры
+        function startNewGame() {
+            // Очищаем данные
+            teams = [];
+            currentQuestion = null;
+            currentTeamIndex = 0;
+            hintUsed = false;
+            questionsAnswered = 0;
+            
+            // Сбрасываем состояние игровой доски
+            document.querySelectorAll('.question-cell').forEach(cell => {
+                cell.classList.remove('disabled');
+            });
+            
+            // Возвращаемся на начальный экран
+            resultsScreen.style.display = 'none';
+            startScreen.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
