@@ -100,14 +100,13 @@
         }
 
         .modal-content {
-            background: linear-gradient(135deg, white, #f5f5f5);
+            background-color: white;
             margin: 50px auto;
-            padding: 40px;
-            border-radius: 20px;
+            padding: 30px;
+            border-radius: 15px;
             max-inline-size: 800px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.4s ease-out;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
         }
 
         .team-btn {
@@ -119,18 +118,13 @@
         }
 
         .button {
-            padding: 12px 25px;
-            border-radius: 30px;
+            padding: 10px 20px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             border: none;
             outline: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            font-size: 1.1em;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .button-primary {
@@ -151,6 +145,25 @@
         .button-success {
             background: linear-gradient(135deg, var(--success-color), #66bb6a);
             color: white;
+        }
+
+        .button-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .button-info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:active {
+            transform: translateY(0);
         }
 
         .header {
@@ -436,21 +449,25 @@
         }
 
         /* Анимация для правильного и неправильного ответа */
+        @keyframes answer-correct-anim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes answer-wrong-anim {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+
         .answer-correct-anim {
-            animation: correctFlash 0.8s;
+            animation: answer-correct-anim 0.5s ease;
         }
+
         .answer-wrong-anim {
-            animation: wrongFlash 0.8s;
-        }
-        @keyframes correctFlash {
-            0% { box-shadow: 0 0 0 0 rgba(67, 160, 71, 0.7); }
-            40% { box-shadow: 0 0 40px 20px rgba(67, 160, 71, 0.5); }
-            100% { box-shadow: 0 0 0 0 rgba(67, 160, 71, 0); }
-        }
-        @keyframes wrongFlash {
-            0% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.7); }
-            40% { box-shadow: 0 0 40px 20px rgba(229, 57, 53, 0.5); }
-            100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
+            animation: answer-wrong-anim 0.5s ease;
         }
 
         /* Анимация для подсказки */
@@ -768,6 +785,198 @@
             padding: 2px !important;
           }
         }
+
+        /* Стили для вариантов ответов */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-block-start: 20px;
+        }
+
+        .option-button {
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+            text-align: start;
+            color: #1e293b;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .option-button:hover:not(:disabled) {
+            background: #e0e7ff;
+            border-color: #c7d2fe;
+            transform: translateY(-2px);
+        }
+
+        .option-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        @media (max-inline-size: 600px) {
+            .modal-content {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .option-button {
+                padding: 12px;
+                font-size: 0.95em;
+            }
+
+            .button {
+                padding: 8px 16px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Анимации для правильного и неправильного ответов */
+        @keyframes correctAnswer {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes wrongAnswer {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .answer-correct-anim {
+            animation: correctAnswer 0.5s ease;
+        }
+
+        .answer-wrong-anim {
+            animation: wrongAnswer 0.5s ease;
+        }
+
+        /* Стили для модального окна с вопросом */
+        #question-modal .modal-content {
+            max-inline-size: 480px;
+            inline-size: 95%;
+            padding: 28px 18px 24px 18px;
+        }
+
+        #question-category {
+            font-size: 1em;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        #question-value {
+            font-size: 1em;
+            color: #334155;
+            font-weight: 700;
+        }
+
+        #question-text {
+            font-size: 1.25em;
+            font-weight: 700;
+            margin-block-end: 24px;
+            color: #1e293b;
+            text-align: start;
+        }
+
+        .options-container {
+            margin-block-start: 0;
+            margin-block-end: 0;
+            gap: 14px;
+        }
+
+        .option-button {
+            font-size: 1.08em;
+            padding: 14px 12px;
+            margin-block-end: 0;
+            border-radius: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+            text-align: start;
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .option-button:hover:not(:disabled) {
+            background: #e0e7ef;
+            box-shadow: 0 2px 8px #dbeafe44;
+        }
+
+        @media (max-inline-size: 600px) {
+            #question-modal .modal-content {
+                padding: 12px 4px 16px 4px;
+            }
+            #question-text {
+                font-size: 1.08em;
+            }
+            .option-button {
+                font-size: 1em;
+                padding: 10px 8px;
+            }
+        }
+
+        /* В стилях */
+        #hint-text {
+            margin-block-start: 24px;
+            margin-block-end: 8px;
+            font-size: 1.08em;
+            line-height: 1.4;
+        }
+
+        /* Новый красивый салют */
+        .firework-container {
+            position: fixed;
+            inset-block-start: 0;
+            inline-size: 120px;
+            block-size: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .firework-left { inset-inline-start: 0; }
+        .firework-right { inset-inline-end: 0; }
+        .firework-burst {
+            position: absolute;
+            inset-inline-start: 50%;
+            inset-block-start: 50%;
+            transform: translate(-50%, -50%);
+            inline-size: 1px;
+            block-size: 1px;
+            pointer-events: none;
+        }
+        .firework-particle {
+            position: absolute;
+            inline-size: var(--size, 12px);
+            block-size: var(--size, 12px);
+            border-radius: 50%;
+            opacity: 0.85;
+            background: var(--color, #fff);
+            transform: translate(-50%, -50%) scale(0.7);
+            animation: firework-particle-burst 1.1s cubic-bezier(.4,2,.3,1) forwards;
+        }
+        .firework-particle.line {
+            border-radius: 3px;
+            inline-size: 4px;
+            block-size: 18px;
+            background: linear-gradient(180deg, var(--color, #fff) 60%, #fff0 100%);
+        }
+        @keyframes firework-particle-burst {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.7); }
+            60% { opacity: 1; }
+            100% {
+                opacity: 0;
+                transform:
+                    translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, 0px)))
+                    scale(1.2) rotate(var(--rot, 0deg));
+            }
+        }
     </style>
 </head>
 <body>
@@ -929,51 +1138,29 @@
             </div>
 
             <div class="text-center mt-8">
-                <button id="new-game-btn" class="button button-primary text-lg px-8 py-3">
-                    Новая игра
-                    <i class="fas fa-redo ml-2"></i>
-                </button>
+                <!-- Кнопка 'Новая игра' удалена -->
             </div>
         </div>
     </div>
 
     <!-- Модальное окно с вопросом -->
     <div id="question-modal" class="modal">
-        <div class="modal-content w-full max-w-2xl">
-            <div class="mb-6">
-                <h3 id="question-category" class="text-xl font-semibold text-blue-700"></h3>
-                <p id="question-value" class="text-lg font-bold"></p>
-                <hr class="my-4">
-                <div id="current-team-info" class="bg-blue-100 p-3 rounded-lg mb-4">
-                    <p class="font-bold">Отвечает команда: <span id="current-team-name">-</span></p>
+        <div class="modal-content">
+            <div class="flex flex-col">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-blue-700 font-semibold" id="question-category"></span>
+                    <span class="text-gray-700 font-bold" id="question-value"></span>
                 </div>
-                <p id="question-text" class="text-xl font-medium mb-6"></p>
-                <div id="hint-section" class="mb-4">
-                    <button id="show-hint-btn" class="button button-primary">
-                        <i class="fas fa-lightbulb mr-2"></i>Показать подсказку (-50% баллов)
-                    </button>
-                    <div id="hint-text" class="mt-3 p-3 bg-yellow-100 rounded-lg" style="display: none;"></div>
+                <div id="question-text" class="text-xl font-bold mb-6"></div>
+                <div id="current-team-name" class="text-lg font-semibold mb-4"></div>
+                <div id="answer-section" class="mb-4" style="display: none;">
+                    <div class="text-green-600 font-semibold">Правильный ответ:</div>
+                    <div id="answer-text" class="mt-2"></div>
                 </div>
-            </div>
-            
-            <div class="flex flex-wrap justify-center gap-3">
-                <button id="correct-answer-btn" class="button button-success">
-                    <i class="fas fa-check mr-2"></i>Правильный ответ
-                </button>
-                <button id="wrong-answer-btn" class="button button-danger">
-                    <i class="fas fa-times mr-2"></i>Неправильный ответ
-                </button>
-                <button id="pass-question-btn" class="button" style="background-color: var(--warning-color); color: white;">
-                    <i class="fas fa-share mr-2"></i>Передать вопрос
-                </button>
-                <button id="show-answer-btn" class="button" style="background-color: var(--dark-color); color: white;">
-                    <i class="fas fa-eye mr-2"></i>Показать ответ
-                </button>
-            </div>
-            
-            <div id="answer-section" class="mt-6 p-4 bg-gray-100 rounded-lg" style="display: none;">
-                <h4 class="font-bold mb-2">Правильный ответ:</h4>
-                <p id="answer-text" class="text-lg"></p>
+                <div id="options-placeholder"></div>
+                <div class="flex flex-col items-center mt-6">
+                    <div id="hint-text" class="text-yellow-600 mb-4" style="display: none; margin-block-start: 16px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -1001,6 +1188,8 @@
     </div>
 
     <div class="confetti-container" id="confetti"></div>
+    <div id="firework-left" class="firework-container firework-left"></div>
+    <div id="firework-right" class="firework-container firework-right"></div>
 
     <script>
         // База данных вопросов
@@ -1011,31 +1200,61 @@
                     value: 100,
                     question: "Что понимается под «объектами гражданских прав»?",
                     hint: "Посмотрите, какие виды имущества и невещных благ упоминаются в начале раздела о вещных правах.",
-                    answer: "Объектами гражданских прав являются вещи (движимые и недвижимые), деньги, ценные бумаги, а также результаты интеллектуальной деятельности и иные нематериальные блага."
+                    options: [
+                        "Лица, участвующие в правоотношении (физические или юридические).",
+                        "Нормы права, регулирующие имущественные отношения.",
+                        "Вещи (движимые и недвижимые), деньги, ценные бумаги, результаты интеллектуальной деятельности и иные нематериальные блага.",
+                        "Государственные органы, обеспечивающие защиту прав."
+                    ],
+                    correctAnswer: 2
                 },
                 {
                     value: 200,
                     question: "В чём состоит отличие «ущерба» от «упущенной выгоды» при возмещении вреда?",
                     hint: "Вред может быть реальным (фактические потери) и потенциальным (недополученный доход).",
-                    answer: "«Ущерб» — это фактически понесённые расходы и потери (например, ремонт на сумму X рублей). «Упущенная выгода» — это доход, который лицо могло бы получить, но не получило из-за нарушенного права (например, прибыль, которую можно было заработать на том же имуществе)."
+                    options: [
+                        "Ущерб — это потери от утраты имущества, а упущенная выгода — это моральный вред.",
+                        "Ущерб — это недополученная прибыль, а упущенная выгода — фактические расходы на восстановление.",
+                        "Ущерб — фактические потери (например, ремонт), упущенная выгода — недополученный доход (например, прибыль от аренды).",
+                        "Ущерб и упущенная выгода — синонимы, различий нет."
+                    ],
+                    correctAnswer: 2
                 },
                 {
                     value: 300,
                     question: "Дайте определение «обязательству» и назовите его стороны.",
                     hint: "Обязательство — основа договорных и внедоговорных правоотношений.",
-                    answer: "Обязательство — это правоотношение, по которому одно лицо (должник) обязано совершить в пользу другого лица (кредитора) определённое действие (передать имущество, выполнить работу, воздержаться от действия и т. п.)."
+                    options: [
+                        "Отношение между собственником и третьими лицами по поводу имущества.",
+                        "Правоотношение, где одна сторона (должник) обязана совершить действие в пользу другой (кредитора).",
+                        "Соглашение между несколькими лицами о совместной деятельности.",
+                        "Отношение между государством и физическим лицом по уплате налогов."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 400,
                     question: "Что такое «правоотношение» и из каких элементов оно состоит?",
                     hint: "Правоотношение связывает субъекта, объект и содержание (права и обязанности).",
-                    answer: "Правоотношение — это урегулированное нормами права общественное отношение. Состоит из трёх элементов: 1. Субъект (участники — физические или юридические лица), 2. Объект (то, по поводу чего возникают права и обязанности), 3. Содержание (конкретные права и обязанности сторон)."
+                    options: [
+                        "Социальное взаимодействие, регулируемое моральными нормами.",
+                        "Формальная процедура применения норм права к конкретному случаю.",
+                        "Урегулированное нормами права общественное отношение, состоящее из субъекта, объекта и содержания.",
+                        "Совокупность норм, закрепляющих права и обязанности."
+                    ],
+                    correctAnswer: 2
                 },
                 {
                     value: 500,
                     question: "Назовите и охарактеризуйте три способа защиты гражданских прав.",
                     hint: "Один – судебный иск, другой – досудебная претензия, третий – специальные меры.",
-                    answer: "1. Судебный способ (исковое производство): обращение в суд за признанием права, возмещением ущерба, запретом действий и др. 2. Досудебный способ (претензия, медиация, переговоры): направление официального требования или привлечение посредника для согласования. 3. Специальные меры (негаторный иск, требование реституции): средства защиты конкретных видов прав — например, защита права собственности или авторских прав."
+                    options: [
+                        "Судебный (исковое заявление), административный (жалоба в контролирующий орган), уголовный (обращение в прокуратуру).",
+                        "Судебный (исковое производство), досудебный (претензия), специальные меры (негаторный иск, реституция).",
+                        "Медиация, переговоры, арбитражное разбирательство.",
+                        "Обращение в Конституционный суд, подача жалобы в ЕСПЧ, публикация в СМИ."
+                    ],
+                    correctAnswer: 1
                 }
             ],
             // Семейный кодекс
@@ -1044,31 +1263,61 @@
                     value: 100,
                     question: "С какого возраста разрешён брак без согласия родителей?",
                     hint: "Посмотрите общую норму о брачном возрасте.",
-                    answer: "С 18 лет без каких-либо дополнительных условий."
+                    options: [
+                        "С 16 лет при наличии уважительной причины.",
+                        "С 18 лет без дополнительных условий.",
+                        "С 21 года для мужчин и 18 для женщин.",
+                        "С 14 лет с разрешения органов опеки."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 200,
                     question: "Назовите три обязательных условия для заключения брака.",
                     hint: "Условия прописаны в первой главе, касающейся порядка заключения брака.",
-                    answer: "1. Свободное и добровольное согласие обеих сторон. 2. Достижение брачного возраста (18 лет или 16 при наличии основания). 3. Отсутствие препятствий (родство, усыновление, недееспособность и др.)."
+                    options: [
+                        "Наличие свидетелей, медицинское обследование, регистрация в ЗАГСе.",
+                        "Свободное согласие, достижение 18 лет (или 16 при наличии оснований), отсутствие препятствий.",
+                        "Подписание брачного договора, подтверждение дееспособности, наличие жилья.",
+                        "Гражданство РФ, регистрация по месту жительства, отсутствие судимостей."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 300,
                     question: "Какие права имеет ребёнок, рождённый вне брака?",
                     hint: "Семейный кодекс устанавливает равенство всех детей.",
-                    answer: "Ребёнок, рождённый вне брака, имеет те же права, что и законнорожденный: на имя, на воспитание обеими родителями, на содержание, на наследование и так далее."
+                    options: [
+                        "Право на имя, но не на наследование от отца.",
+                        "Равные права с законнорождённым ребёнком.",
+                        "Право на содержание только от матери.",
+                        "Ограничение в праве на образование и медицинскую помощь."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 400,
                     question: "В чём суть принципа «супружеской верности»?",
                     hint: "Этот принцип упоминается в разделе о правах и обязанностях супругов.",
-                    answer: "Супруги обязаны сохранять верность друг другу, уважать честь и достоинство семьи, не вступать в интимные отношения с третьими лицами и поддерживать взаимное доверие."
+                    options: [
+                        "Обязанность совместного проживания и ведения хозяйства.",
+                        "Запрет на вступление в другие браки в период действующего.",
+                        "Обязанность сохранять доверие и не вступать в интимные отношения с третьими лицами.",
+                        "Обязанность сообщать супругу о всех личных расходах."
+                    ],
+                    correctAnswer: 2
                 },
                 {
                     value: 500,
                     question: "Опишите порядок раздела совместно нажитого имущества при разводе.",
                     hint: "Смотрите главу о расторжении брака и разделе имущества.",
-                    answer: "1. Сначала супруги могут заключить соглашение о разделе имущества (утверждается судом). 2. Если соглашения нет, суд распределяет имущество поровну (1/2 на каждого), но может учесть особые обстоятельства (вклад, интересы детей, нуждаемость). 3. Суд выносит решение, которое подлежит обязательному исполнению."
+                    options: [
+                        "Имущество делится в зависимости от вклада каждого в семейный бюджет.",
+                        "Супруги могут заключить соглашение (утверждается судом) или разделить имущество поровну через суд.",
+                        "Всё имущество переходит к детям, если они достигли 14 лет.",
+                        "Имущество делится только по решению органов опеки."
+                    ],
+                    correctAnswer: 1
                 }
             ],
             // Уголовный кодекс
@@ -1077,31 +1326,61 @@
                     value: 100,
                     question: "Что означает «презумпция невиновности»?",
                     hint: "Формулировка приводится в Уголовно-процессуальном кодексе и Конституции.",
-                    answer: "Лицо считается невиновным, пока его виновность не будет доказана в законном судебном порядке и установлена вступившим в силу приговором."
+                    options: [
+                        "Лицо считается виновным, если его задержали полицией.",
+                        "Лицо считается невиновным, пока виновность не доказана судом.",
+                        "Лицо считается виновным, если оно признало вину на допросе.",
+                        "Презумпция не применяется к тяжким преступлениям."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 200,
                     question: "Назовите три вида наказаний, предусмотренных УК РФ.",
                     hint: "Перечень наказаний находится в начале главы об ответственности.",
-                    answer: "Лишение свободы, штраф, ограничение свободы (исправительные/обязательные работы и т. п.)."
+                    options: [
+                        "Лишение свободы, штраф, административный арест.",
+                        "Лишение свободы, штраф, ограничение свободы.",
+                        "Обязательные работы, конфискация имущества, ссылка.",
+                        "Пожизненное заключение, исправительные работы, общественное порицание."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 300,
                     question: "Что понимается под «составом преступления»?",
                     hint: "Состав включает четыре элемента — ищите в статье о составе преступления.",
-                    answer: "Состав преступления состоит из: объекта (на кого/что посягают), объективной стороны (деяние и последствия), субъекта (кто совершил) и субъективной стороны (форма вины — умысел или неосторожность)."
+                    options: [
+                        "Совокупность обстоятельств, подлежащих доказыванию в суде.",
+                        "Четыре элемента: объект, объективная сторона, субъект, субъективная сторона.",
+                        "Перечень квалифицирующих признаков преступления.",
+                        "Список наказаний, применимых к данному деянию."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 400,
                     question: "В чём отличие умысла от неосторожности?",
                     hint: "Сравните волю и знание при умысле с предвидением при неосторожности.",
-                    answer: "Умысел: лицо осознаёт опасность деяния и желает или сознательно допускает наступление последствий. Неосторожность: лицо либо не предвидит последствий и легкомысленно надеется предотвратить их, либо предвидит, но бездействует."
+                    options: [
+                        "Умысел — осознание последствий, неосторожность — полное их игнорирование.",
+                        "Умысел — желание последствий, неосторожность — отсутствие заботы о них.",
+                        "Умысел — действие из корысти, неосторожность — действие из халатности.",
+                        "Умысел и неосторожность — синонимы, различий нет."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 500,
                     question: "Назовите и охарактеризуйте три вида освобождения от уголовной ответственности.",
                     hint: "Ищите в разделе об освобождении от уголовной ответственности и наказания.",
-                    answer: "1. За деятельное раскаяние — лицо добровольно возмещает вред и содействует раскрытию преступления. 2. По малозначительности — деяние не причинило значительного вреда. 3. Амнистия — акт высшего органа власти, освобождающий от ответственности определённые категории лиц."
+                    options: [
+                        "Примирение с потерпевшим, истечение сроков давности, амнистия.",
+                        "Добровольная явка с повинной, активное раскаяние, реабилитация.",
+                        "Перевоспитание, малозначительность, помилование.",
+                        "Отказ от преступления, явка с повинной, дача показаний против соучастников."
+                    ],
+                    correctAnswer: 0
                 }
             ],
             // Административный кодекс
@@ -1110,31 +1389,61 @@
                     value: 100,
                     question: "Какой орган выносит постановление об административном правонарушении?",
                     hint: "Это может быть и должностное лицо (например, инспектор), и судья.",
-                    answer: "Постановление выносит уполномоченный орган или должностное лицо (ГИБДД, полиционер, налоговый инспектор и др.), либо судья."
+                    options: [
+                        "Только судья.",
+                        "Уполномоченный орган или судья.",
+                        "Прокурор.",
+                        "Правительство РФ."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 200,
                     question: "Перечислите три вида административных наказаний.",
                     hint: "Смотрите главу о санкциях.",
-                    answer: "Предупреждение, штраф, лишение специального права (например, права управления ТС), административный арест, обязательные работы."
+                    options: [
+                        "Лишение свободы, штраф, предупреждение.",
+                        "Предупреждение, штраф, лишение специального права.",
+                        "Обязательные работы, арест, изоляция.",
+                        "Конфискация, дисквалификация, административное выдворение."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 300,
                     question: "Что такое объект административного правонарушения?",
                     hint: "Это общественные отношения, охраняемые административным правом.",
-                    answer: "Объектом АПН является совокупность общественных отношений (порядок управления, общественный порядок, безопасность движения и др.), на которые посягает нарушение."
+                    options: [
+                        "Личность нарушителя.",
+                        "Порядок управления, общественный порядок, безопасность движения.",
+                        "Физическое или юридическое лицо.",
+                        "Административный штраф."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 400,
                     question: "В чём состоят отличия предупреждения и штрафа?",
                     hint: "Один — без взыскания денег, другой — всегда с денежным взысканием.",
-                    answer: "Предупреждение: устное или письменное предостережение без взимания. Штраф: обязательное денежное взыскание в установленном размере."
+                    options: [
+                        "Предупреждение — письменное, штраф — устное.",
+                        "Предупреждение — без взыскания, штраф — с денежным взысканием.",
+                        "Предупреждение — для юридических лиц, штраф — для физических.",
+                        "Предупреждение — применяется к несовершеннолетним, штраф — к взрослым."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 500,
                     question: "Опишите процедуру обжалования постановления по делу об административном правонарушении.",
                     hint: "Два уровня — сначала в орган или должностное лицо, потом в суд.",
-                    answer: "1. Жалоба подаётся вышестоящему должностному лицу или органу, вынесшему постановление, в течение 10 дней со дня вручения. 2. Если ответ неудовлетворительный или отсутствует, обжалование направляется в суд (районный суд) в течение 10 дней со дня получения ответа или истечения срока на обжалование."
+                    options: [
+                        "Жалоба подаётся в течение 10 дней в орган, затем — в суд в течение 30 дней.",
+                        "Жалоба подаётся в течение 10 дней в орган или суд.",
+                        "Жалоба направляется только в суд в течение 5 дней.",
+                        "Жалоба не предусмотрена, решение окончательно."
+                    ],
+                    correctAnswer: 1
                 }
             ],
             // Трудовой кодекс
@@ -1143,31 +1452,61 @@
                     value: 100,
                     question: "Какие документы работник предоставляет при приёме на работу?",
                     hint: "Прописано в разделе об обязательных документах.",
-                    answer: "Паспорт и трудовая книжка (или надлежащим образом оформленный её дубликат)."
+                    options: [
+                        "Диплом об образовании, СНИЛС, справку о доходах.",
+                        "Паспорт и трудовая книжка.",
+                        "Медицинская карта, военный билет, ИНН.",
+                        "Заявление на имя работодателя, страховой полис."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 200,
                     question: "Что такое срочный трудовой договор?",
                     hint: "Смотрите определение в главе «Общие положения».",
-                    answer: "Трудовой договор, заключённый на определённый срок или до наступления определённого события."
+                    options: [
+                        "Договор, который можно расторгнуть в любой момент.",
+                        "Договор, заключённый на определённый срок или до наступления события.",
+                        "Договор на испытательный срок.",
+                        "Договор с почасовой оплатой труда."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 300,
                     question: "Назовите три обязательных условия трудового договора.",
                     hint: "Перечислены в статье о содержании договора.",
-                    answer: "Место работы (или структурное подразделение), трудовая функция (должность, квалификация) и условия оплаты труда (размер, периодичность)."
+                    options: [
+                        "График работы, условия охраны труда, размер премии.",
+                        "Место работы, трудовая функция, условия оплаты.",
+                        "Социальные гарантии, срок испытания, обязанности работника.",
+                        "Ответственность за нарушение договора, порядок увольнения, командировки."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 400,
                     question: "В каких случаях работник может расторгнуть трудовой договор без отработки?",
                     hint: "Ищите основания в разделе об увольнении по инициативе работника.",
-                    answer: "При нарушении работодателем прав работника: задержка выплаты зарплаты более чем на 15 дней, невыполнение условий охраны труда, несоблюдение иных существенных условий договора."
+                    options: [
+                        "При переезде в другой город.",
+                        "При нарушении работодателем условий договора (задержка зарплаты, опасные условия).",
+                        "При уходе в отпуск по уходу за ребёнком.",
+                        "При заключении нового трудового договора."
+                    ],
+                    correctAnswer: 1
                 },
                 {
                     value: 500,
                     question: "Опишите механизм привлечения к дисциплинарной ответственности и сроки давности.",
                     hint: "Смотрите раздел «Дисциплинарные взыскания».",
-                    answer: "Взыскание (замечание, выговор) объявляется не позднее одного месяца со дня, когда работодатель узнал о нарушении, но не более шести месяцев со дня совершения. Увольнение — не позднее одного месяца со дня, когда стало известно о проступке, но не более года со дня его совершения."
+                    options: [
+                        "Взыскание налагается в день совершения проступка, срок давности — 1 год.",
+                        "Взыскание объявляется не позднее 1 месяца со дня выявления, срок давности — 6 месяцев.",
+                        "Взыскание применяется только после суда, срок давности — 3 года.",
+                        "Взыскание не требует оформления, срок давности — 2 года."
+                    ],
+                    correctAnswer: 1
                 }
             ]
         ];
@@ -1180,6 +1519,7 @@
         let hintUsed = false;
         let questionsAnswered = 0;
         let totalQuestions = 25; // 5 категорий * 5 вопросов
+        let selectedCell = null;
 
         // DOM-элементы
         const startScreen = document.getElementById('start-screen');
@@ -1201,7 +1541,6 @@
         document.getElementById('correct-answer-btn').addEventListener('click', handleCorrectAnswer);
         document.getElementById('wrong-answer-btn').addEventListener('click', handleWrongAnswer);
         document.getElementById('pass-question-btn').addEventListener('click', showPassQuestionModal);
-        document.getElementById('show-answer-btn').addEventListener('click', showAnswer);
         document.getElementById('cancel-pass-btn').addEventListener('click', hidePassQuestionModal);
 
         // Обработчик поля ввода для добавления команды по Enter
@@ -1211,30 +1550,31 @@
             }
         });
 
-        // Добавление обработчиков для ячеек с вопросами
-        document.querySelectorAll('.question-cell').forEach(cell => {
-            cell.addEventListener('click', function() {
-                if (!this.classList.contains('disabled')) {
-                    // Сохраняем выбранный вопрос
-                    const category = parseInt(this.getAttribute('data-category'));
-                    const value = parseInt(this.getAttribute('data-value'));
-                    const questionData = questions[category].find(q => q.value === value);
-                    currentQuestion = {
-                        category: category,
-                        value: value,
-                        originalValue: value,
-                        data: questionData
-                    };
-                    // Показываем модальное окно выбора команды
-                    showTeamSelectModal();
-                    this.classList.add('disabled');
-                    questionsAnswered++;
-                    if (questionsAnswered === totalQuestions) {
-                        document.getElementById('end-game-btn').classList.add('animate-pulse');
+        // Функция назначения обработчиков на ячейки вопросов
+        function assignQuestionCellHandlers() {
+            document.querySelectorAll('.question-cell').forEach(cell => {
+                cell.onclick = null;
+                cell.addEventListener('click', function() {
+                    if (!this.classList.contains('disabled')) {
+                        const category = parseInt(this.getAttribute('data-category'));
+                        const value = parseInt(this.getAttribute('data-value'));
+                        const questionData = questions[category].find(q => q.value === value);
+                        currentQuestion = {
+                            category: category,
+                            value: value,
+                            originalValue: value,
+                            data: questionData,
+                            cell: this // сохраняем ссылку на ячейку
+                        };
+                        showTeamSelectModal();
+                        questionsAnswered++;
+                        if (questionsAnswered === totalQuestions) {
+                            document.getElementById('end-game-btn').classList.add('animate-pulse');
+                        }
                     }
-                }
+                });
             });
-        });
+        }
 
         // Функция для отображения экрана добавления команд
         function showTeamsScreen() {
@@ -1260,14 +1600,17 @@
                 // Добавление команды в список
                 const teamsList = document.getElementById('teams-list');
                 const teamItem = document.createElement('li');
-                teamItem.innerHTML = `
-                    <div class="flex justify-between items-center py-2">
-                        <span>${teamName}</span>
-                        <button class="text-red-500 hover:text-red-700" onclick="removeTeam(${teamId})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center py-2';
+                const span = document.createElement('span');
+                span.textContent = teamName;
+                const btn = document.createElement('button');
+                btn.className = 'text-red-500 hover:text-red-700';
+                btn.innerHTML = '<i class="fas fa-trash"></i>';
+                btn.addEventListener('click', function() { removeTeam(teamId); });
+                div.appendChild(span);
+                div.appendChild(btn);
+                teamItem.appendChild(div);
                 teamsList.appendChild(teamItem);
                 
                 // Очистка поля ввода
@@ -1279,29 +1622,30 @@
         }
 
         // Функция удаления команды
-        window.removeTeam = function(teamId) {
+        function removeTeam(teamId) {
             teams = teams.filter(team => team.id !== teamId);
             renderTeamsList();
-            
             // Блокируем кнопку начала игры, если нет команд
             document.getElementById('start-board-btn').disabled = teams.length === 0;
-        };
+        }
 
         // Перерисовка списка команд
         function renderTeamsList() {
             const teamsList = document.getElementById('teams-list');
             teamsList.innerHTML = '';
-            
             teams.forEach(team => {
                 const teamItem = document.createElement('li');
-                teamItem.innerHTML = `
-                    <div class="flex justify-between items-center py-2">
-                        <span>${team.name}</span>
-                        <button class="text-red-500 hover:text-red-700" onclick="removeTeam(${team.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center py-2';
+                const span = document.createElement('span');
+                span.textContent = team.name;
+                const btn = document.createElement('button');
+                btn.className = 'text-red-500 hover:text-red-700';
+                btn.innerHTML = '<i class="fas fa-trash"></i>';
+                btn.addEventListener('click', function() { removeTeam(team.id); });
+                div.appendChild(span);
+                div.appendChild(btn);
+                teamItem.appendChild(div);
                 teamsList.appendChild(teamItem);
             });
         }
@@ -1312,6 +1656,7 @@
             gameBoardScreen.style.display = 'block';
             updateScoreBoard();
             questionsAnswered = 0;
+            assignQuestionCellHandlers();
         }
 
         // Функция обновления табло с баллами
@@ -1351,21 +1696,102 @@
             currentTeam = teams[idx];
             const modal = document.getElementById('team-select-modal');
             modal.style.display = 'none';
-            // После выбора команды показываем вопрос
-            openQuestionForTeam();
+            // Передаём ссылку на ячейку вопроса
+            openQuestionForTeam(currentQuestion.cell);
         }
 
         // Функция открытия вопроса для выбранной команды
-        function openQuestionForTeam() {
+        function openQuestionForTeam(cell) {
             hintUsed = false;
+            const questionData = currentQuestion.data;
+            if (cell) currentQuestion.cell = cell;
             document.getElementById('question-category').textContent = getCategoryName(currentQuestion.category);
             document.getElementById('question-value').textContent = `${currentQuestion.value} баллов`;
-            document.getElementById('question-text').textContent = currentQuestion.data.question;
-            document.getElementById('current-team-name').textContent = currentTeam.name;
+            document.getElementById('question-text').textContent = questionData.question;
+            document.getElementById('current-team-name').textContent = 'Отвечает: ' + currentTeam.name;
             document.getElementById('hint-text').style.display = 'none';
+            document.getElementById('hint-text').textContent = '';
             document.getElementById('answer-section').style.display = 'none';
-            document.getElementById('show-hint-btn').disabled = false;
+            document.getElementById('answer-text').textContent = '';
+            // --- Перемешиваем копию вариантов ответов ---
+            const options = questionData.options.map((opt, idx) => ({ text: opt, isCorrect: idx === questionData.correctAnswer }));
+            const shuffled = shuffleArrayNew(options);
+            const newCorrectIndex = shuffled.findIndex(opt => opt.isCorrect);
+            currentQuestion.shuffledOptions = shuffled.map(opt => opt.text);
+            currentQuestion.shuffledCorrectAnswer = newCorrectIndex;
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'options-container mt-6 space-y-3';
+            currentQuestion.shuffledOptions.forEach((option, index) => {
+                const optionButton = document.createElement('button');
+                optionButton.className = 'option-button w-full p-4 text-left rounded-lg transition-all duration-300 hover:bg-blue-50';
+                optionButton.style.backgroundColor = '#f8fafc';
+                optionButton.style.border = '1px solid #e2e8f0';
+                optionButton.textContent = option;
+                optionButton.addEventListener('click', () => handleAnswer(index));
+                optionsContainer.appendChild(optionButton);
+            });
+            const oldOptions = document.getElementById('options-placeholder').querySelector('.options-container');
+            if (oldOptions) oldOptions.remove();
+            document.getElementById('options-placeholder').appendChild(optionsContainer);
             questionModal.style.display = 'block';
+        }
+        // Новый алгоритм Фишера-Йетса, возвращает новый массив
+        function shuffleArrayNew(array) {
+            const arr = array.slice();
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Функция обработки ответа
+        function handleAnswer(selectedIndex) {
+            const optionButtons = document.querySelectorAll('.option-button');
+            // Используем перемешанный индекс правильного ответа
+            const correctIndex = currentQuestion.shuffledCorrectAnswer;
+            // Отключаем все кнопки
+            optionButtons.forEach(button => {
+                button.disabled = true;
+                button.style.pointerEvents = 'none';
+            });
+            // Проверяем ответ
+            if (selectedIndex === correctIndex) {
+                // Правильный ответ
+                optionButtons[selectedIndex].style.backgroundColor = '#dcfce7';
+                optionButtons[selectedIndex].style.borderColor = '#86efac';
+                // Анимация
+                const modal = document.querySelector('#question-modal .modal-content');
+                modal.classList.add('answer-correct-anim');
+                // Начисляем баллы
+                const team = teams[currentTeamIndex];
+                team.score += currentQuestion.value;
+                updateScoreBoard();
+                setTimeout(() => {
+                    modal.classList.remove('answer-correct-anim');
+                    questionModal.style.display = 'none';
+                    currentTeam = null;
+                }, 1500);
+            } else {
+                // Неправильный ответ
+                optionButtons[selectedIndex].style.backgroundColor = '#fee2e2';
+                optionButtons[selectedIndex].style.borderColor = '#fca5a5';
+                // Показываем правильный ответ
+                optionButtons[correctIndex].style.backgroundColor = '#dcfce7';
+                optionButtons[correctIndex].style.borderColor = '#86efac';
+                // Анимация
+                const modal = document.querySelector('#question-modal .modal-content');
+                modal.classList.add('answer-wrong-anim');
+                setTimeout(() => {
+                    modal.classList.remove('answer-wrong-anim');
+                    questionModal.style.display = 'none';
+                    currentTeam = null;
+                }, 1500);
+            }
+            // Делаем ячейку вопроса неактивной только после ответа
+            if (currentQuestion.cell) {
+                currentQuestion.cell.classList.add('disabled');
+            }
         }
 
         // Функция получения названия категории
@@ -1465,7 +1891,7 @@
             btn.classList.remove('show-answer-anim');
             void btn.offsetWidth;
             btn.classList.add('show-answer-anim');
-            document.getElementById('answer-text').textContent = currentQuestion.data.answer;
+            document.getElementById('answer-text').textContent = currentQuestion.data.options[currentQuestion.data.correctAnswer];
             document.getElementById('answer-section').style.display = 'block';
         }
 
@@ -1538,7 +1964,11 @@
             // Возвращаемся на начальный экран
             resultsScreen.style.display = 'none';
             startScreen.style.display = 'block';
+            assignQuestionCellHandlers();
         }
+
+        // Назначаем обработчики при первой загрузке страницы
+        assignQuestionCellHandlers();
     </script>
 </body>
 </html>
